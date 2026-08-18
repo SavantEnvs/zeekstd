@@ -1,0 +1,29 @@
+[package]
+name = "zeekstd-mayhem-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2024"
+
+# This crate is deliberately its OWN workspace root (empty [workspace] below), even though it
+# sits inside the zeekstd repo tree. The zeekstd root Cargo.toml (upstream file, never edited)
+# lists an explicit `members = ["cli", "lib", "fuzz"]` and does not know about mayhem/fuzz; a
+# nested Cargo.toml without its own [workspace] would make cargo walk up, find that root
+# workspace, and fail because this package isn't a declared member. An empty [workspace] table
+# stops the walk here, so this stays fully additive (no edit to the upstream workspace file).
+[workspace]
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+
+[dependencies.zeekstd]
+path = "../../lib"
+
+[[bin]]
+name = "decode_only"
+path = "fuzz_targets/decode_only.rs"
+test = false
+doc = false
+bench = false

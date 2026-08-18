@@ -1,0 +1,13 @@
+project: savantenvs/zeekstd
+target: decode_only
+# The high-value target: raw fuzzer bytes feed the seekable DECODER directly (no encoder
+# round-trip), so this is the one that actually stresses the seek-table footer / frame-index
+# parser against malformed containers. Seeds are real seekable .zst archives generated with the
+# repo's own CLI (single-frame, multi-frame w/ checksum, multi-frame w/o checksum, and a
+# compressed-frame-size-policy variant) so the format-gated parser isn't fuzzing from zero.
+testsuite:
+  - https://$MAYHEM_DOMAIN/$MAYHEM_PROJECT/$MAYHEM_TARGET/testsuite.tar
+  - file://mayhem/decode_only/testsuite
+cmds:
+  - cmd: /mayhem/decode_only
+    libfuzzer: true
